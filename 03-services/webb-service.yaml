@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: webb-service
+spec:
+  # Typen av service. Om den utelämnas blir det automatiskt ClusterIP
+  type: ClusterIP
+  # Selector: Vilka pods ska denna Service skicka trafik till?
+  # Måste matcha poddarnas label!
+  selector:
+    # TODO 1: Ange samma label som din deployment/pod har
+    app: min-webb
+  ports:
+    - protocol: TCP
+      # TODO 2: Porten som servicen exponerar (t.ex. 80)
+      port: 80
+      # TODO 3: Porten på podden dit trafiken ska skickas (t.ex. 80)
+      targetPort: 80

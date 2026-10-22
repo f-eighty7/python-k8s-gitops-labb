@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  # TODO 1: Lägg till vanliga textvariabler (key: value)
+  # t.ex. APP_ENV: "development" och APP_FEATURE_FLAG: "true"
+  APP_ENV: "development"
+  APP_FEATURE_FLAG: "true"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: app-secrets
+type: Opaque # Standardtypen för godtyckliga hemligheter
+# I "stringData" kan du skriva lösenord i klartext i filen;
+# Kubernetes omvandlar dem automatiskt till Base64 i klustret!
+stringData:
+  # TODO 2: Lägg till hemliga variabler (t.ex. DB_PASSWORD: "SuperSecretPassword123")
+  DB_PASSWORD: "TestPassword123"

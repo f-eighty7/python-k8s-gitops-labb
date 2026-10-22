@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webb-deployment
+  labels:
+    app: min-webb
+spec:
+  # TODO 1: Hur många kopior (replicas) av podden vill du ha? (t.ex. 3)
+  replicas: 1
+  # Selector: Deploymenten behöver veta VILKA pods den ska hantera
+  selector:
+    matchLabels:
+      app: min-webb
+  # Template: Ritningen för hur varje enskild Pod ska se ut
+  template:
+    metadata:
+      labels:
+        # VIKTIGT: Denna label MÅSTE matcha selector.matchLabels ovan!
+        app: min-webb
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+          # Lägg till detta under containern:
+          envFrom:
+            # TODO 1: Referera till din ConfigMap (app-config)
+            - configMapRef:
+                name: app-config
+            # TODO 2: Referera till din Secret (app-secrets)
+            - secretRef:
+                name: app-secrets
+          # TODO 1: Montera volymen inuti containern
+          volumeMounts:
+            - name: webb-data-volym # Måste matcha namnet under volumes nedan
+              mountPath: /usr/share/nginx/html # Nginx standardmapp för webbsidor
+      # TODO 2: Deklarera volymen på Pod-nivå (samma indrag som 'containers:')
+      volumes:
+        - name: webb-data-volym
+          persistentVolumeClaim:
+            # TODO 3: Ange namnet på din PVC (webb-pvc)
+            claimName: webb-pvc

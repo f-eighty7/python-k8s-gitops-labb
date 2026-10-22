@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: robust-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: robust-webb
+  template:
+    metadata:
+      labels:
+        app: robust-webb
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+
+          # 1. Resursbegränsningar
+          resources:
+            requests:
+              memory: "64Mi"
+              # TODO 1: Sätt en CPU-request (t.ex. "50m")
+              cpu: "50m"
+            limits:
+              # TODO 2: Sätt en minnesgräns (t.ex. "128Mi")
+              memory: 128Mi
+              # TODO 3: Sätt en CPU-gräns (t.ex. "100m" eller "200m")
+              cpu: "200m"
+
+          # 2. Hälsokontroller
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            # TODO 4: Hur många sekunder ska K8s vänta innan första kollen? (t.ex. 5)
+            initialDelaySeconds: 5
+            # TODO 5: Hur ofta ska K8s göra kollen? (t.ex. 10)
+            periodSeconds: 10
+
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 2
+            periodSeconds: 5

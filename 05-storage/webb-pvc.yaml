@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: webb-pvc
+spec:
+  # TODO 1: Ange accessModes (använd t.ex. ReadWriteOnce)
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      # TODO 2: Hur mycket utrymme vill du begära? (t.ex. 500Mi eller 1Gi)
+      storage: 1Gi

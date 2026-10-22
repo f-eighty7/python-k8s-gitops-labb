@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+  namespace: labb-projekt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-frontend
+  template:
+    metadata:
+      labels:
+        app: redis-frontend
+    spec:
+      containers:
+        - name: redis-commander
+          image: ghcr.io/joeferner/redis-commander:latest
+          ports:
+            # redis-commander lyssnar på port 8081:
+            - containerPort: 8081
+          env:
+            # TODO 1: Vilket internt DNS-namn har Redis-servicen? (redis-service)
+            - name: REDIS_HOST
+              value: redis-service
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  # TODO 2: Namnet på vår Secret (redis-secret)
+                  name: redis-secret
+                  key: REDIS_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: labb-projekt
+spec:
+  selector:
+    # TODO 3: Matcha frontend-poddens label (app: redis-frontend)
+    app: redis-frontend
+  ports:
+    - port: 8081
+      targetPort: 8081
