@@ -1,0 +1,41 @@
+name: CI -Build and Push to ACR (OIDC)
+
+on:
+    push:
+        branches:
+            - main
+        paths:
+            - "09-gitops-project/python-app/**"
+            - ".github/workflows/ci.yaml"
+
+permissions:
+    id-token: write
+    contents: read
+
+jobs:
+    build-and-push:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Azure OIDC Login
+              uses: azure/login@v3
+              with:
+                  client-id: ${{ secrets.AZURE_CLIENT_ID }}
+                  tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+                  subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+            - name: Log in to Azure ACR
+              run: |
+                  az acr login --name acrliaak01
+
+            - name: Build and push Docker image
+              working-directory: 09-gitops-project/python-app
+              run: |
+                  docker build \
+                      -t acrliaak01.azurecr.io/lia-python:latest \
+                      -t acrliaak01.azurecr.io/lia-python:${{ github.sha }} .
+                  docker push acrliaak01.azurecr.io/lia-python:latest
+                  docker push acrliaak01.azurecr.io/lia-python:${{ github.sha }}
